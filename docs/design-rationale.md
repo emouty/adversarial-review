@@ -151,8 +151,8 @@ Optimizer findings ≤50 words per Problem field, suggested fixes ≤30 words,
 Skeptic challenges ≤50 words. This trims verbose reasoning that inflates cost
 without improving signal.
 
-**Signal gate** — Adapted from
-[OpenAI Codex's review guidelines](https://github.com/openai/codex/blob/main/codex-rs/core/review_prompt.md).
+**Signal gate** — Adapted from the
+[OpenAI Codex review guidelines](https://github.com/openai/codex/blob/main/codex-rs/core/review_prompt.md).
 Every Optimizer finding is assessed against an 8-point checklist: actionable,
 introduced by the PR, not demanding rigor absent from the rest of the codebase,
 not relying on unstated assumptions, provably identifying the affected code path.
@@ -162,7 +162,7 @@ confidence) because current Claude models follow drop-silently instructions
 literally — they find real bugs and then decline to report them, killing recall.
 Filtering instead happens downstream, where the pipeline already has the
 machinery: the Skeptic challenge, confidence thresholds, and the Haiku scoring
-pass. The Codex prompt also informed our tightened Critical severity definition
+pass. That same guideline also informed our tightened Critical severity definition
 (universal issues only, no scenario-dependent triggers), the mandatory Trigger
 field in findings (forcing reviewers to specify when a bug manifests), and the
 matter-of-fact tone guidance for PR comments.
@@ -179,13 +179,12 @@ feature flags, or adjacent refactoring.
 - A determined attacker who understands the specific models, prompts, and
   consensus logic could craft code that fools all four agents simultaneously.
   This is a defense-in-depth layer, not a security boundary.
-- A Claude run on a machine without the `codex` CLI uses only Claude models —
+- A run with no external lane configured uses only Claude models —
   "multi-model" there means Sonnet + Opus, which is within-family diversity, not
-  multi-vendor diversity. For cross-vendor review, install and authenticate the
-  `codex` CLI (the sidecar then joins automatically), pass `--codex-lane` for the
-  full Codex-native lane, or run `$adversarial-review --compare-claude` against
-  the Claude artifacts and treat provider disagreement as a first-class review
-  outcome.
+  multi-vendor diversity. For cross-vendor review, register another vendor's CLI
+  in the `lanes` adapter registry
+  ([configuration](configuration.md#adding-more-providers-lanes)) and treat
+  provider disagreement as a first-class review outcome.
 - The Skeptic's self-correction is bounded but not eliminated — it can still flip
   correct Optimizer findings to incorrect (Huang et al.). Multi-model diversity
   reduces but does not remove this risk.

@@ -32,9 +32,8 @@ jobs:
           token: ${{ steps.app-token.outputs.token || github.token }}
           # No release-type here: setting it puts the action in bootstrap mode,
           # which ignores release-please-config.json — including the extra-files
-          # that bump .claude-plugin/plugin.json, .claude-plugin/marketplace.json,
-          # and .codex-plugin/plugin.json. The config file declares the release
-          # type instead.
+          # that bump .claude-plugin/plugin.json and .claude-plugin/marketplace.json.
+          # The config file declares the release type instead.
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
 

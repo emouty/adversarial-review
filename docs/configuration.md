@@ -18,9 +18,9 @@ The review reads convention and lens guidance from several files, in this order:
 | `REVIEW.md` (repo root) | Review only | What to flag, what to skip, house style rules |
 | `.claude/docs/code-review.md` | Review + agents | Domain checklist with severity lenses |
 | `CLAUDE.md` | All Claude Code tasks | Project conventions (also read during review) |
-| `~/.claude/adversarial-review.json` | Flag defaults, user-wide | Default `with-codex` / `codex-lane` / `mode` / `lanes` for every repo |
+| `~/.claude/adversarial-review.json` | Flag defaults, user-wide | Default `mode` / `comment` / `lanes` for every repo |
 | `.claude/adversarial-review.json` | Flag defaults, per repo | Same keys, overrides the user file per key — except executable `lanes` (see below) |
-| [`review-protocol.md`](review-protocol.md) | Spec | The normative cross-provider contract: artifacts, schemas, preamble, adapters |
+| [`review-protocol.md`](review-protocol.md) | Spec | The normative cross-provider contract: artifacts, schemas, adapters |
 
 ## Scoped reviews (`--paths`)
 
@@ -38,11 +38,10 @@ comment is labeled with the scope so a partial review is never mistaken for a
 full one. If no branch changes match, the review stops early and lists the
 branch's changed files so you can adjust.
 
-Both entry points support it:
+The `/adversarial-review:run` entry point supports it:
 
 ```bash
-/adversarial-review:run --paths "src/api/**,src/auth/**"   # Claude Code
-$adversarial-review --paths "src/api/**,src/auth/**"       # Codex
+/adversarial-review:run --paths "src/api/**,src/auth/**"
 ```
 
 The full pathspec-translation and scope-propagation rules are specified in
@@ -50,13 +49,12 @@ The full pathspec-translation and scope-propagation rules are specified in
 
 ## Flag defaults
 
-`adversarial-review.json` recognizes four keys; unknown keys are ignored.
+`adversarial-review.json` recognizes three keys; unknown keys are ignored.
 
 ```json
 {
-  "with-codex": true,
-  "codex-lane": false,
   "mode": "no-fix",
+  "comment": false,
   "lanes": {
     "gemini": {
       "probe": "gemini --version",
@@ -70,14 +68,16 @@ The full pathspec-translation and scope-propagation rules are specified in
 
 **Precedence** is explicit flag > project config > user config > built-in default:
 
-- `--with-codex` / `--codex-lane` / `--no-codex` beat the `with-codex` and
-  `codex-lane` keys (and `codex-lane: true` wins over `with-codex: true`).
 - `--no-fix` / `--fix` beat the `mode` key.
+- `--comment` / `--no-comment` beat the `comment` key.
 
-The built-in default is **auto**: the Codex sidecar runs whenever the `codex`
-CLI is installed and authenticated, and an explicit `false` on either key opts
-out. A malformed config file is noted in the report and skipped — it never
-blocks a review.
+A malformed config file is noted in the report and skipped — it never blocks
+a review.
+
+The review is local-first: `comment` defaults to `false`, so findings only show up in
+the report and `summary.md`. Set it to `true` (or pass `--comment`) to also post
+findings to the PR/MR as a pending (unpublished) review — the review stays a draft
+until the author publishes it.
 
 ### Why `lanes` is user-level only
 
@@ -91,9 +91,9 @@ anything else is ignored with a note.
 
 ## Adding more providers (`lanes`)
 
-Codex isn't special-cased forever. Any provider with a headless one-shot CLI can
-join a Claude-led review as an extra sidecar lane through the `lanes` registry —
-no plugin changes needed.
+Cross-vendor reviewers are defined exclusively through the `lanes` adapter
+registry. Any provider with a headless one-shot CLI can join a Claude-led
+review as an extra sidecar lane through it — no plugin changes needed.
 
 Because adapters define shell commands the review runs, they must come from your
 environment, never from the repo being reviewed (a hostile branch could
@@ -106,12 +106,14 @@ otherwise turn review setup into arbitrary execution). Each adapter declares:
 | `guard` | no | Set `true` when the CLI lacks a read-only sandbox, enabling the baseline-aware tracked-file guard |
 | `models` | no | Informational model string for provenance tables |
 
-Adapter lanes get the same lifecycle as the Codex sidecar: probed before
-spawning, one call per pass, process exit as the completion signal, a ~10-minute
-timeout, and never able to block a review. Their reports
-(`optimizer-<provider>.md` / `skeptic-<provider>.md`) merge into the same
-synthesis, and cross-vendor agreement weighting applies to every lane equally.
-`--no-codex` disables **all** cross-vendor lanes, config-defined ones included.
+Adapter lanes follow the lifecycle in SKILL.md's "Additional provider lanes":
+probe at Step 0, one CLI call per pass, process exit as the only completion
+signal, a ~10-minute bound past the Claude wave, and a failed or empty report
+never blocks the review. Their reports (`optimizer-<provider>.md` /
+`skeptic-<provider>.md`) merge into the same synthesis, and cross-vendor
+agreement weighting applies to every lane equally. A project-level `lanes`
+entry set to `false` disables that lane for the repo; there is no flag to
+disable all cross-vendor lanes at once.
 
 The full schema, orchestration contract, and an add-a-provider checklist live in
 [`review-protocol.md`](review-protocol.md#provider-adapter-registry).

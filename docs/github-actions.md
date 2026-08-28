@@ -1,10 +1,7 @@
 # GitHub Actions & CI
 
-Run adversarial reviews automatically on pull requests. There are two
-independent lanes you can wire up — a Claude lane and a Codex lane — and you can
-run both and synthesize their artifacts.
-
-## Claude lane
+Run adversarial reviews automatically on pull requests. The Action runs the
+Claude lane; extra provider lanes are local-CLI only.
 
 ```yaml
 name: Adversarial Code Review
@@ -44,45 +41,11 @@ jobs:
 | `allowed_tools` | No | — | Additional allowed tools (comma-separated) |
 | `model` | No | — | Model override for the lead agent |
 
-## Codex lane
-
-Use `openai/codex-action@v1` for an independent Codex review lane in CI. This
-example reads the Codex workflow instructions from the checked-out repo, so it
-doesn't require installing the plugin in the runner first.
-
-```yaml
-name: Codex Adversarial Review
-
-on:
-  pull_request:
-    types: [opened, ready_for_review, reopened, labeled]
-
-jobs:
-  codex-review:
-    if: >-
-      github.event.action != 'labeled' ||
-      github.event.label.name == 'review'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-      issues: write
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: refs/pull/${{ github.event.pull_request.number }}/merge
-          fetch-depth: 0
-      - uses: openai/codex-action@v1
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          prompt: "Read skills/codex-review/SKILL.md, then run that workflow in --no-fix mode for PR ${{ github.event.pull_request.number }}."
-          # workspace-write: the skill writes .reviews/ artifacts and mechanical.txt;
-          # a read-only sandbox would fail the run. Job permissions stay contents: read.
-          sandbox: workspace-write
-```
-
-For cross-provider review in CI, run the Claude job and the Codex job separately
-and upload each lane's `.reviews/` as artifacts before a synthesis step.
+By default the Action produces the report and `.reviews/` artifacts only — these
+die with the runner unless uploaded (`actions/upload-artifact`). To post
+findings on the PR, pass `--comment` (via `claude_args`); this lands as an
+**unpublished** pending review owned by the workflow's token identity, which
+must publish it (e.g. `gh api` in a later step) before it's visible.
 
 ## Recommended triggers
 
