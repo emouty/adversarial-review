@@ -40,10 +40,11 @@ jobs:
 | `paths` | No | — | Comma-separated paths/globs to scope the review (passed as `--paths`) |
 | `allowed_tools` | No | — | Additional allowed tools (comma-separated) |
 | `model` | No | — | Model override for the lead agent |
+| `comment` | No | `false` | `true` posts findings to the PR as a pending review (passed as `--comment`) |
 
 By default the Action produces the report and `.reviews/` artifacts only — these
 die with the runner unless uploaded (`actions/upload-artifact`). To post
-findings on the PR, pass `--comment` (via `claude_args`); this lands as an
+findings on the PR, set the `comment` input to `true`; this lands as an
 **unpublished** pending review owned by the workflow's token identity, which
 must publish it (e.g. `gh api` in a later step) before it's visible.
 

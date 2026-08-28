@@ -22,6 +22,10 @@ inputs:
     description: 'Comma-separated paths/globs to scope the review to (passed as --paths). Empty reviews the entire branch diff.'
     required: false
     default: ''
+  comment:
+    description: 'Set "true" to post findings to the PR as an unpublished pending review (passed as --comment). Default: report only, no PR comments.'
+    required: false
+    default: 'false'
   allowed_tools:
     description: 'Additional allowed tools (comma-separated). git, gh, and common build tools are included by default.'
     required: false
@@ -44,7 +48,7 @@ runs:
         # value (typos, "review-only", ...) runs with --no-fix. The condition must be
         # the != form: in `a && '' || b` the empty string is falsy, so the || branch
         # would fire even when a is true.
-        prompt: '/adversarial-review:run ${{ inputs.mode != ''auto-fix'' && ''--no-fix'' || '''' }} ${{ inputs.paths != '''' && format(''--paths "{0}"'', inputs.paths) || '''' }} ${{ inputs.pr_number }}'
+        prompt: '/adversarial-review:run ${{ inputs.mode != ''auto-fix'' && ''--no-fix'' || '''' }} ${{ inputs.paths != '''' && format(''--paths "{0}"'', inputs.paths) || '''' }} ${{ inputs.comment == ''true'' && ''--comment'' || '''' }} ${{ inputs.pr_number }}'
         # claude-code-action v1 removed the allowed_tools/model inputs — both are passed
         # through claude_args instead.
         claude_args: >-
