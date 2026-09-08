@@ -1,6 +1,6 @@
 name: 'Adversarial Code Review'
 description: 'Multi-model adversarial code review — Optimizer and Skeptic agents challenge each other, auto-fix consensus issues.'
-author: 'ng'
+author: 'emouty'
 
 branding:
   icon: 'shield'
@@ -42,8 +42,8 @@ runs:
       uses: anthropics/claude-code-action@1eddb334cfa79fdb21ecbe2180ca1a016e8e7d47 # v1
       with:
         claude_code_oauth_token: ${{ inputs.claude_code_oauth_token }}
-        plugin_marketplaces: 'https://github.com/ng/adversarial-review.git'
-        plugins: 'adversarial-review@adversarial-review'
+        plugin_marketplaces: 'https://github.com/emouty/adversarial-review.git'
+        plugins: 'adversarial-review@emouty-plugins'
         # Fail safe: only an explicit "auto-fix" enables code modification; any other
         # value (typos, "review-only", ...) runs with --no-fix. The condition must be
         # the != form: in `a && '' || b` the empty string is falsy, so the || branch

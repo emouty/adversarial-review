@@ -2,11 +2,16 @@
 
 ## Unreleased
 
-- **Flag defaults via config**: `~/.claude/adversarial-review.json` (user-wide) and `.claude/adversarial-review.json` (per repo) can set `"with-codex": true` and/or a default `mode`, so cross-vendor review can be the default instead of a per-run flag. Explicit flags (`--with-codex`/`--no-codex`, `--no-fix`/`--fix`) always override config.
-- **`--with-codex` cross-vendor sidecar**: Opt-in flag adds an OpenAI Codex reviewer to the Claude review as a read-only `codex exec` background sidecar writing `optimizer-codex.md` / `skeptic-codex.md`, merged into the same synthesis with cross-vendor agreement weighted above same-vendor. Soft-fails to Claude-only when the `codex` CLI is missing or unauthenticated. (Re-implements PR #21 on the two-wave orchestration.)
-- **Codex cross-review support**: Added Codex plugin packaging, a Codex-native `$adversarial-review` skill, and repo marketplace metadata so Codex can run an independent review lane.
-- **Split runtime skill trees**: Claude Code now loads `claude/skills/` while Codex loads `skills/`, keeping each runtime's orchestration instructions isolated.
-- **Cross-provider workflow docs**: Documented Claude + Codex side-by-side review, Codex install steps, Codex Action usage, and the artifact comparison model for `--compare-claude`.
+Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review), released as 2.0.0: dropping the Codex flags is a breaking change for configs that set `"with-codex": true`.
+
+- **`--paths` review scoping**: `--paths <glob>[,<glob>...]` on the skill and the GitHub Action (`paths` input) restricts the review to branch changes in matching files: pathspec translation, empty-scope early exit, in-scope-only classification and depth, `Scope` headers on every artifact, scoped PR comments.
+- **Opt-in PR/MR comments**: reviews are local-first. `--comment` (or `"comment": true` in config, or the Action `comment` input) posts findings as an unpublished pending review after the report; `--no-comment` forces report-only. Default is off.
+- **Dead-code lens**: mechanical checks run a dead-code detector (`knip`, `ts-prune`, `vulture`, `deadcode`, compiler unused-symbol warnings) and report symbols left unreferenced by the change as Minor findings.
+- **Provider adapter registry**: `lanes` config key adds any headless one-shot CLI as an extra sidecar reviewer lane (`probe`/`exec`/`guard`/`models`), merged into the same synthesis with cross-vendor agreement weighted above same-vendor. Executable adapters load from the user-level config only; a project-level entry may only be `false`. Normative spec in `docs/review-protocol.md`.
+- **Flag defaults via config**: `~/.claude/adversarial-review.json` (user-wide) and `.claude/adversarial-review.json` (per repo) set default `mode`, `comment` and `lanes`. Explicit flags always override config.
+- **Step 8 ordering**: `summary.md` is written to `.reviews/<branch_safe>/` before the report is presented; PR/MR posting is always the last action and never skips the on-disk summary.
+- **Removed Codex support**: dropped the `--with-codex`/`--no-codex` flags, the Codex plugin packaging (`.codex-plugin/`, `.agents/plugins/`), the Codex-native `skills/codex-review` skill and the split `claude/skills/` vs `skills/` runtime trees. Cross-vendor review goes through the `lanes` registry instead.
+- **Docs split**: README is a lean entry point; details moved to `docs/` (`configuration.md`, `cross-provider.md`, `review-protocol.md`, `github-actions.md`, `design-rationale.md`).
 
 ## [1.6.1](https://github.com/ng/adversarial-review/compare/v1.6.0...v1.6.1) (2026-07-03)
 

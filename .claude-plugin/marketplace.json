@@ -1,9 +1,9 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "adversarial-review",
+  "name": "emouty-plugins",
   "description": "Adversarial multi-model code review with progressive cost-gating",
   "owner": {
-    "name": "ng"
+    "name": "emouty"
   },
   "plugins": [
     {
@@ -11,11 +11,11 @@
       "description": "Adversarial multi-model code review with dual Optimizer/Skeptic agents across Sonnet and Opus. Finds issues, challenges its own findings, and only auto-fixes what survives cross-model consensus.",
       "version": "1.6.1",
       "author": {
-        "name": "ng"
+        "name": "emouty"
       },
       "source": "./",
       "category": "development",
-      "repository": "https://github.com/ng/adversarial-review",
+      "repository": "https://github.com/emouty/adversarial-review",
       "license": "MIT",
       "keywords": [
         "code-review",

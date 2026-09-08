@@ -4,6 +4,11 @@
 
 **Multi-model, adversarial code review for Claude Code.**
 
+> Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review). The
+> review protocol, agents, and most of this repository are the original author's
+> work; this fork drops the Codex lane, adds a dead-code lens, and makes PR
+> commenting opt-in. See [Credits](#credits).
+
 Free mechanical checks run first. Then two agents — **The Optimizer** and **The
 Skeptic** — review your code independently and challenge each other's findings.
 Only findings that survive the challenge at high confidence get auto-fixed, and a
@@ -22,8 +27,8 @@ becomes your strongest signal.
 ## Install
 
 ```bash
-/plugin marketplace add ng/adversarial-review
-/plugin install adversarial-review
+/plugin marketplace add emouty/adversarial-review
+/plugin install adversarial-review@emouty-plugins
 ```
 
 Re-run both commands to update.
@@ -175,6 +180,15 @@ definition, edit the protocol doc first, then sync the embedded copies.
 
 See [CHANGELOG.md](CHANGELOG.md) for release history.
 
+## Credits
+
+Based on [ng/adversarial-review](https://github.com/ng/adversarial-review) by
+[ng](https://github.com/ng): the Optimizer/Skeptic design, the cost gate, the
+review protocol, the GitHub Action, and the docs all originate there. Upstream
+history up to v1.6.1 is preserved in [CHANGELOG.md](CHANGELOG.md) and the git
+log. Changes specific to this fork are listed under `Unreleased`.
+
 ## License
 
-MIT
+MIT, see [LICENSE](LICENSE). Copyright remains with the original author for the
+upstream work.
