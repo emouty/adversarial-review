@@ -1,7 +1,6 @@
 # GitHub Actions & CI
 
-Run adversarial reviews automatically on pull requests. The Action runs the
-Claude lane; extra provider lanes are local-CLI only.
+Run adversarial reviews automatically on pull requests.
 
 ```yaml
 name: Adversarial Code Review

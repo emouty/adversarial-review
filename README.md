@@ -6,23 +6,20 @@
 
 > Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review). The
 > review protocol, agents, and most of this repository are the original author's
-> work; this fork drops the Codex lane, adds a dead-code lens, and makes PR
+> work; this fork drops cross-vendor review, adds a dead-code lens, and makes PR
 > commenting opt-in. See [Credits](#credits).
 
 Free mechanical checks run first. Then two agents — **The Optimizer** and **The
 Skeptic** — review your code independently and challenge each other's findings.
 Only findings that survive the challenge at high confidence get auto-fixed, and a
-bounded verification loop catches regressions from the fixes themselves. Register
-another vendor's CLI as an extra reviewer lane and agreement across providers
-becomes your strongest signal.
+bounded verification loop catches regressions from the fixes themselves.
 
 - **Adversarial by design** — every finding must survive a second, skeptical
   pass backed by command output, not reasoning alone.
 - **Cost-gated** — mechanical checks are free and run first; expensive LLM review
   scales to the size and risk of the diff.
-- **Cross-vendor** — Claude (Sonnet + Opus) plus any provider CLI you register in
-  the `lanes` adapter registry, merged into one synthesis.
-  [Learn more →](docs/cross-provider.md)
+- **Multi-model** — Sonnet and Opus review the same diff from different context
+  angles, and their agreement is the strongest signal in the synthesis.
 
 ## Install
 
@@ -45,8 +42,7 @@ Re-run both commands to update.
 ```
 
 Flags combine — see [Configuration](docs/configuration.md) to set defaults once
-instead of passing them every run, and [Cross-provider review](docs/cross-provider.md)
-for extra provider lanes.
+instead of passing them every run.
 
 ## How it works
 
@@ -64,10 +60,7 @@ flowchart TD
     Gate -->|"Score ≤ 0"| Report
     Gate -->|"Score 1–4"| Standard["Claude standard<br/>Sonnet Optimizer + Skeptic<br/>(2 agents)"]
     Gate -->|"Score ≥ 5"| Full["Claude full<br/>Sonnet + Opus<br/>Optimizer + Skeptic<br/>(4 agents)"]
-    Gate -->|"config lanes adapters"| AdapterLanes["Adapter sidecars<br/>Optimizer + Skeptic<br/>one exec per pass per provider"]
-    Standard & Full --> ProviderMerge["Lead merges lane findings"]
-    AdapterLanes --> ProviderMerge
-    ProviderMerge --> Synth["7. Synthesize findings<br/>(cross-provider when present)"]
+    Standard & Full --> Synth["7. Synthesize findings"]
     Synth --> ModeCheck{Auto-fix?}
     ModeCheck -->|"--no-fix"| Report
     ModeCheck -->|"Default"| Apply["Apply consensus<br/>Critical/Major fixes"]
@@ -92,10 +85,9 @@ flowchart TD
    spend.
 7. **Adversarial review** — change-type classification and weighted escalation
    scoring pick standard (2 agents) or full (4 agents) depth, spawned in two
-   waves: Optimizers first, Skeptics after the Optimizer merge lands. Claude
-   reviewers run as background agents (follow along with `← for agents`, or watch
-   `.reviews/<branch_safe>/`); registered provider lanes run as one headless CLI
-   call per pass and write comparable artifacts.
+   waves: Optimizers first, Skeptics after the Optimizer merge lands. Reviewers
+   run as background agents (follow along with `← for agents`, or watch
+   `.reviews/<branch_safe>/`).
 8. **Synthesize** — confidence-based filtering and a Haiku scoring pass, then
    apply consensus fixes (auto-fix) or report them as suggestions (review-only).
 9. **Structured report** — findings land in the local report and a persistent
@@ -158,23 +150,16 @@ and GitLab (API via `$GITLAB_PAT`).
 
 | Doc | What's inside |
 |-----|---------------|
-| [Configuration & customization](docs/configuration.md) | `REVIEW.md`, flag defaults, scoped reviews, adding providers |
-| [Cross-provider review](docs/cross-provider.md) | The `lanes` adapter registry: registering a provider CLI, how lanes merge into one synthesis |
+| [Configuration & customization](docs/configuration.md) | `REVIEW.md`, flag defaults, scoped reviews |
 | [GitHub Actions & CI](docs/github-actions.md) | Workflow, inputs, fork-PR safety, release automation |
 | [Design rationale](docs/design-rationale.md) | Research foundations, patterns from Claude Code internals, known limitations |
-| [Cross-provider protocol](docs/review-protocol.md) | The normative spec: artifact contract, schemas, adapter registry |
 
 ## Plugin layout
 
 The plugin manifest is `.claude-plugin/plugin.json`; the review workflow lives in
-`claude/skills/`.
-
-What is shared with every extra provider lane — the artifact contract,
-finding/verdict schemas, severity and signal-gate definitions, and the provider
-adapter registry — is normatively specified in
-[`docs/review-protocol.md`](docs/review-protocol.md). The skill file embeds
-copies where subagent prompts need them inline; when changing a shared
-definition, edit the protocol doc first, then sync the embedded copies.
+`claude/skills/`. `claude/skills/run/SKILL.md` is the single source for the whole
+protocol: artifact contract, finding/verdict schemas, severity and signal-gate
+definitions.
 
 ## Changelog
 

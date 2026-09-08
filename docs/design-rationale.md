@@ -179,12 +179,9 @@ feature flags, or adjacent refactoring.
 - A determined attacker who understands the specific models, prompts, and
   consensus logic could craft code that fools all four agents simultaneously.
   This is a defense-in-depth layer, not a security boundary.
-- A run with no external lane configured uses only Claude models —
-  "multi-model" there means Sonnet + Opus, which is within-family diversity, not
-  multi-vendor diversity. For cross-vendor review, register another vendor's CLI
-  in the `lanes` adapter registry
-  ([configuration](configuration.md#adding-more-providers-lanes)) and treat
-  provider disagreement as a first-class review outcome.
+- "Multi-model" means Sonnet + Opus: within-family diversity. Two models from
+  one family share blind spots that a genuinely independent reviewer would not,
+  so agreement between them raises confidence without ever proving correctness.
 - The Skeptic's self-correction is bounded but not eliminated — it can still flip
   correct Optimizer findings to incorrect (Huang et al.). Multi-model diversity
   reduces but does not remove this risk.
