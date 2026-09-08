@@ -13,6 +13,30 @@ Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review), relea
 - **Removed cross-vendor lanes**: the `lanes` adapter registry, sidecar processes and tracked-file guard are gone; review is Claude-only (Sonnet + Opus).
 - **Docs split**: README is a lean entry point; details moved to `docs/` (`configuration.md`, `github-actions.md`, `design-rationale.md`).
 
+## [2.0.0](https://github.com/emouty/adversarial-review/compare/v1.6.1...v2.0.0) (2026-09-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* remove cross-vendor lanes, review is Claude-only
+* rebrand fork as emouty-plugins marketplace, add LICENSE and credits
+
+### Features
+
+* add --paths review scoping and a cross-provider adapter registry ([#32](https://github.com/emouty/adversarial-review/issues/32)) ([78b9093](https://github.com/emouty/adversarial-review/commit/78b909359d5344799bcc747134d2e1d79628bcc0))
+* remove cross-vendor lanes, review is Claude-only ([bf3cf44](https://github.com/emouty/adversarial-review/commit/bf3cf44874b6881d1ddfe002ba560aef7ae628a1))
+* team review tweaks (drop Codex, dead-code lens, opt-in pending PR comments) ([04d4cf9](https://github.com/emouty/adversarial-review/commit/04d4cf99396424d05f3405c294ed43e64ef778da))
+
+
+### Bug Fixes
+
+* address code review findings ([86e8029](https://github.com/emouty/adversarial-review/commit/86e802931ab2dae6648311287b13d01215b0570c))
+
+
+### Miscellaneous Chores
+
+* rebrand fork as emouty-plugins marketplace, add LICENSE and credits ([8be6d3a](https://github.com/emouty/adversarial-review/commit/8be6d3ab5f8898aa08081567c4c3435d1e73b879))
+
 ## [1.6.1](https://github.com/ng/adversarial-review/compare/v1.6.0...v1.6.1) (2026-07-03)
 
 
