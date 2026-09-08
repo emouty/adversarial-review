@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+## [2.0.0](https://github.com/emouty/adversarial-review/compare/v1.6.1...v2.0.0) (2026-09-08)
 
-Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review), released as 2.0.0: dropping the Codex flags is a breaking change for configs that set `"with-codex": true`.
+### Fork notes
+
+Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review). Dropping the Codex flags and the `lanes` registry is a breaking change for configs that set `"with-codex": true` or `"lanes"`.
 
 - **`--paths` review scoping**: `--paths <glob>[,<glob>...]` on the skill and the GitHub Action (`paths` input) restricts the review to branch changes in matching files: pathspec translation, empty-scope early exit, in-scope-only classification and depth, `Scope` headers on every artifact, scoped PR comments.
 - **Opt-in PR/MR comments**: reviews are local-first. `--comment` (or `"comment": true` in config, or the Action `comment` input) posts findings as an unpublished pending review after the report; `--no-comment` forces report-only. Default is off.
@@ -12,8 +14,6 @@ Fork of [ng/adversarial-review](https://github.com/ng/adversarial-review), relea
 - **Removed Codex support**: dropped the `--with-codex`/`--no-codex` flags, the Codex plugin packaging (`.codex-plugin/`, `.agents/plugins/`), the Codex-native `skills/codex-review` skill and the split `claude/skills/` vs `skills/` runtime trees. Cross-vendor review is removed entirely — there is no adapter registry replacing it.
 - **Removed cross-vendor lanes**: the `lanes` adapter registry, sidecar processes and tracked-file guard are gone; review is Claude-only (Sonnet + Opus).
 - **Docs split**: README is a lean entry point; details moved to `docs/` (`configuration.md`, `github-actions.md`, `design-rationale.md`).
-
-## [2.0.0](https://github.com/emouty/adversarial-review/compare/v1.6.1...v2.0.0) (2026-09-08)
 
 
 ### ⚠ BREAKING CHANGES

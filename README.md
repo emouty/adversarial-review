@@ -171,7 +171,7 @@ Based on [ng/adversarial-review](https://github.com/ng/adversarial-review) by
 [ng](https://github.com/ng): the Optimizer/Skeptic design, the cost gate, the
 review protocol, the GitHub Action, and the docs all originate there. Upstream
 history up to v1.6.1 is preserved in [CHANGELOG.md](CHANGELOG.md) and the git
-log. Changes specific to this fork are listed under `Unreleased`.
+log. Changes specific to this fork are listed under 2.0.0.
 
 ## License
 
