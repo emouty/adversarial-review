@@ -994,6 +994,56 @@ Report sections:
 - **Model Agreement Summary**: How many findings had full cross-model consensus vs split opinions
 - **Recommendation**: Approve, Request Changes, or Comment
 
+**Step 8 order is fixed**: (1) save `summary.md` (next section), (2) present the report
+to the user, (3) opt-in PR/MR posting — always last, only after every local artifact is
+on disk. Never end the turn after presenting the report without `summary.md` written.
+
+### Save persistent review summary
+
+Write a self-contained summary to `[repo_root]/.reviews/[branch_safe]/summary.md` that captures the full review outcome. This file is the **review artifact of record** — it survives after agent reports are cleaned up and contains everything needed to understand what was reviewed, decided, and deferred.
+
+```markdown
+# Code Review Summary — [branch] (PR #[number])
+Date: [YYYY-MM-DD]
+Scope: [paths]
+Depth: [skip | standard | full] (score: [N] — [breakdown])
+Change types: [change_types]
+Branch: [branch] → [base]
+
+## What changed
+[2-3 sentence walkthrough]
+
+## Findings
+
+### Provenance
+| Finding | Reviewer(s) (lane) | Skeptic verdicts (lane: verdict/conf) | Haiku | Outcome |
+|---------|--------------------|---------------------------------------|-------|---------|
+[one row per finding, using the same lane vocabulary as the Step 8 report table —
+cross-lane agreement must be visible at a glance; "—" where a stage didn't run]
+
+### Fixed ([count])
+[list of findings that were auto-fixed, with file:line and one-line description]
+
+### Disputed ([count])
+[findings where agents disagreed, with both sides and author's decision if made]
+
+### Lower Confidence ([count])
+[findings where only one model flagged it, Skeptic confidence was 50-74, or Haiku score
+was 30-60 — worth a second look but not confirmed issues]
+
+### Deferred ([count])
+[findings not addressed in this PR, with issue numbers if filed]
+
+### Pre-existing ([count])
+[bugs in surrounding code not from this PR, with issue numbers if filed]
+
+## Mechanical checks
+[pass/fail status of lint, typecheck, build, tests]
+
+## Verification
+[how many fix-verify iterations, final status]
+```
+
 ### Post findings as a pending PR/MR review (opt-in)
 
 The review is local-first: posting to the PR/MR runs ONLY when `[comment_mode]` is `on`.
@@ -1104,51 +1154,8 @@ For each finding, format the comment as:
 </details>
 ```
 
-### Save persistent review summary
-
-Write a self-contained summary to `[repo_root]/.reviews/[branch_safe]/summary.md` that captures the full review outcome. This file is the **review artifact of record** — it survives after agent reports are cleaned up and contains everything needed to understand what was reviewed, decided, and deferred.
-
-```markdown
-# Code Review Summary — [branch] (PR #[number])
-Date: [YYYY-MM-DD]
-Scope: [paths]
-Depth: [skip | standard | full] (score: [N] — [breakdown])
-Change types: [change_types]
-Branch: [branch] → [base]
-
-## What changed
-[2-3 sentence walkthrough]
-
-## Findings
-
-### Provenance
-| Finding | Reviewer(s) (lane) | Skeptic verdicts (lane: verdict/conf) | Haiku | Outcome |
-|---------|--------------------|---------------------------------------|-------|---------|
-[one row per finding, using the same lane vocabulary as the Step 8 report table —
-cross-lane agreement must be visible at a glance; "—" where a stage didn't run]
-
-### Fixed ([count])
-[list of findings that were auto-fixed, with file:line and one-line description]
-
-### Disputed ([count])
-[findings where agents disagreed, with both sides and author's decision if made]
-
-### Lower Confidence ([count])
-[findings where only one model flagged it, Skeptic confidence was 50-74, or Haiku score
-was 30-60 — worth a second look but not confirmed issues]
-
-### Deferred ([count])
-[findings not addressed in this PR, with issue numbers if filed]
-
-### Pre-existing ([count])
-[bugs in surrounding code not from this PR, with issue numbers if filed]
-
-## Mechanical checks
-[pass/fail status of lint, typecheck, build, tests]
-
-## Verification
-[how many fix-verify iterations, final status]
-```
+Posting is the LAST action of Step 8 — `summary.md` and all `.reviews/` artifacts are
+already written by this point; nothing local depends on the posting outcome.
 
 ## Step 9: File Issues for Deferred and Disputed Items
 
@@ -1216,7 +1223,7 @@ ISSUE
 - [Link to review summary if available]
 
 ---
-*Filed by [adversarial-review](https://github.com/ng/adversarial-review) plugin*
+*Filed by [adversarial-review](https://github.com/emouty/adversarial-review) plugin*
 ```
 
 For disputed items, include BOTH the Optimizer's argument and the Skeptic's challenge in the issue body so future readers have the full debate context.
